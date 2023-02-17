@@ -147,15 +147,22 @@ class Parser {
                 $script['path'] = $pathConverterToLocal($script['file']);
             }
             
+            $arrContextOptions = array(
+                "ssl" => array(
+                    "verify_peer" => false,
+                    "verify_peer_name" => false,
+                ),
+            );
+
             // Get source from filesystem
             if (isset($script['path']) AND file_exists($script['path'])) {
                 
-                $source = file_get_contents($script['path']);
+                $source = file_get_contents($script['path'], false, stream_context_create($arrContextOptions));
             }
             // Get source from http
             else {
                 
-                $source = file_get_contents($script['file']);
+                $source = file_get_contents($script['file'], false, stream_context_create($arrContextOptions));
             }            
             
             if (!isset($sources[$script['ext']])) {
@@ -203,7 +210,15 @@ class Parser {
             }
             
             if (empty($script['source'])) {
-                $script['source'] = file_get_contents($script['file']);
+
+                $arrContextOptions = array(
+                    "ssl" => array(
+                        "verify_peer" => false,
+                        "verify_peer_name" => false,
+                    ),
+                );
+
+                $script['source'] = file_get_contents($script['file'], false, stream_context_create($arrContextOptions));
             }
             
             ${$script['ext']} .= $script['source'];
